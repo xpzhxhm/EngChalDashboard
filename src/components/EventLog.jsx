@@ -1,30 +1,40 @@
-const formatTime = (timestamp) => {
-  if (!timestamp) return '—';
-  return new Date(timestamp).toLocaleTimeString([], { hour12: false });
-};
-
 export default function EventLog({ events }) {
-  const items = Array.isArray(events) ? events : [];
-
   return (
-    <div className="card event-log">
-      <div className="card-header">
-        <h3>Event Log</h3>
+    <div className="panel">
+      <div className="panel-header">
+        <h2>Event log</h2>
       </div>
-      <div className="event-list">
-        {items.length === 0 && <div className="empty-state">No events yet.</div>}
-        {items.map((event) => (
-          <div key={`${event.timestamp}-${event.label ?? 'event'}`} className="event-item">
-            <div className="event-meta">
-              <span className="event-label">{event.label ?? 'anomaly'}</span>
-              {event.severity ? <span className={`event-severity ${event.severity}`}>{event.severity}</span> : null}
-              <span className="event-stream">{event.stream}</span>
-            </div>
-            <div className="event-detail">{event.detail ?? '—'}</div>
-            <div className="event-timestamp">{formatTime(event.timestamp)}</div>
-          </div>
-        ))}
-      </div>
+
+      {!events || events.length === 0 ? (
+        <p className="muted">No events yet.</p>
+      ) : (
+        <table className="event-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Signal</th>
+              <th>Value</th>
+              <th>z-score</th>
+              <th>Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            {events.map((evt, idx) => (
+              <tr key={idx}>
+                <td>{evt.time}</td>
+                <td>{evt.signal}</td>
+                <td>{evt.value}</td>
+                <td>
+                  {typeof evt.zScore === 'number'
+                    ? evt.zScore.toFixed(2)
+                    : evt.zScore}
+                </td>
+                <td>{evt.classification}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

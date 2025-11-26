@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import StreamSelector from './components/StreamSelector.jsx';
 import SetpointControls from './components/SetpointControls.jsx';
 import KPIBar from './components/KPIBar.jsx';
 import ChartsPanel from './components/ChartsPanel.jsx';
@@ -23,16 +22,23 @@ export default function App() {
 
   const tolerances = {
     temp: 0.5, // Spec: maintain 30°C ±0.5°C
-    rpm: 20, // Spec: regulate 1000 RPM ±20 RPM
-    pH: 0.1 // Operational tolerance inside broader 3-7 sensing range
+    rpm: 20,   // Spec: regulate 1000 RPM ±20 RPM
+    pH: 0.1    // Operational tolerance inside broader 3-7 sensing range
   };
 
   const handleSetpointChange = (key, value) => {
     setSetpoints((prev) => ({ ...prev, [key]: value }));
   };
 
-  const { stream, setStream, connectionStatus, current, history, metrics, events, lastUpdated } =
-    useBioreactorStream('nofaults');
+  // If your hook still expects a default stream, keep 'nofaults' here:
+  const {
+    connectionStatus,
+    current,
+    history,
+    metrics,
+    events,
+    lastUpdated
+  } = useBioreactorStream('nofaults');
 
   return (
     <div className="app-shell">
@@ -40,14 +46,13 @@ export default function App() {
         <div>
           <p className="eyebrow">ENGF0001</p>
           <h1>Bioreactor Dashboard</h1>
-          <p className="subtitle">Anomaly detection (z-score) & live telemetry</p>
+          <p className="subtitle">Anomaly detection (z-score) &amp; live telemetry</p>
         </div>
         <div className={statusMap[connectionStatus] ?? 'status-pill'}>{connectionStatus}</div>
       </header>
 
       <main className="app-content">
         <section className="responsive-grid two-col">
-          <StreamSelector value={stream} onChange={setStream} />
           <SetpointControls setpoints={setpoints} onChange={handleSetpointChange} />
         </section>
 
