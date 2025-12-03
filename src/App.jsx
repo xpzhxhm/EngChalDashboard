@@ -1,79 +1,101 @@
-import { useState } from 'react';
-import SetpointControls from './components/SetpointControls.jsx';
-import KPIBar from './components/KPIBar.jsx';
-import ChartsPanel from './components/ChartsPanel.jsx';
-import EventLog from './components/EventLog.jsx';
-import { useBioreactorStream } from './hooks/useBioreactorStream.js';
+// src/App.jsx
+import React, { useEffect, useState } from "react";
+
+import SetpointControls from "./components/SetpointControls.jsx";
+import KPIBar from "./components/KPIBar.jsx";
+import ChartsPanel from "./components/ChartsPanel.jsx";
+// HardwareConnectionTester removed
+
+import { useHardwareBioreactorStream } from "./hooks/useHardwareBioreactorStream.js";
+import "./styles.css";
 
 const statusMap = {
-  idle: 'status-pill idle',
-  connecting: 'status-pill connecting',
-  open: 'status-pill open',
-  error: 'status-pill error',
-  closed: 'status-pill closed'
+  disconnected: "status-pill closed",
+  reconnecting: "status-pill connecting",
+  connected: "status-pill open",
+  error: "status-pill error",
 };
 
 export default function App() {
+  // Local setpoints state for the dashboard controls
   const [setpoints, setSetpoints] = useState({
     temp: 30,
     rpm: 1000,
-    pH: 5
+    pH: 5,
   });
 
-  const tolerances = {
-    temp: 0.5, // Spec: maintain 30°C ±0.5°C
-    rpm: 20,   // Spec: regulate 1000 RPM ±20 RPM
-    pH: 0.1    // Operational tolerance inside broader 3-7 sensing range
-  };
+  // Hook that talks to the simulator / MQTT stream
+  // Hook that talks to the hardware stream
+  const { telemetry, lastSetpoints, sendSetpoints, connectionStatus } =
+    useHardwareBioreactorStream();
+
+  // Maintain a short history of telemetry for charts
+  const [history, setHistory] = useState([]);
+
+  useEffect(() => {
+    if (!telemetry) return;
+    setHistory((prev) => {
+      const next = [...prev, telemetry];
+      // keep last 200 points
+      return next.slice(-200);
+    });
+  }, [telemetry]);
 
   const handleSetpointChange = (key, value) => {
     setSetpoints((prev) => ({ ...prev, [key]: value }));
   };
 
-  // If your hook still expects a default stream, keep 'nofaults' here:
-  const {
-    connectionStatus,
-    current,
-    history,
-    metrics,
-    events,
-    lastUpdated
-  } = useBioreactorStream('nofaults');
+  const handleSendSetpoints = () => {
+    // send current setpoints to the backend/simulator
+    sendSetpoints(setpoints);
+  };
 
   return (
-    <div className="app-shell">
+    <div className="app">
       <header className="app-header">
-        <div>
-          <p className="eyebrow">ENGF0001</p>
-          <h1>Bioreactor Dashboard</h1>
-          <p className="subtitle">Anomaly detection (z-score) &amp; live telemetry</p>
+        <h1>ENGF0001 Bioreactor Anomaly Dashboard</h1>
+        <div className={statusMap[connectionStatus] || statusMap.disconnected}>
+          {connectionStatus ?? "disconnected"}
         </div>
-        <div className={statusMap[connectionStatus] ?? 'status-pill'}>{connectionStatus}</div>
       </header>
 
-      <main className="app-content">
-        <section className="responsive-grid two-col">
-          <SetpointControls setpoints={setpoints} onChange={handleSetpointChange} />
-        </section>
+      <main className="app-main">
+        {/* Top row: dials (left) and setpoint controls (right) - 50/50 */}
+        <div className="top-row" style={{ display: 'flex', gap: 16 }}>
+          <div style={{ flex: 1 }}>
+            <KPIBar
+              current={telemetry}
+              lastUpdated={telemetry?.time ?? telemetry?.timestamp}
+              setpoints={setpoints}
+            />
+          </div>
 
-        <section>
-          <KPIBar
-            current={current}
-            metrics={metrics}
-            lastUpdated={lastUpdated}
-            setpoints={setpoints}
-            tolerances={tolerances}
-          />
-        </section>
+          <div style={{ flex: 1 }}>
+            <SetpointControls
+              setpoints={setpoints}
+              onChange={handleSetpointChange}
+            />
+            <div style={{ padding: 12 }}>
+              <button type="button" onClick={handleSendSetpoints}>
+                Send setpoints
+              </button>
+            </div>
+          </div>
+        </div>
 
-        <section>
+        {/* Charts below span full width */}
+        <div style={{ marginTop: 16 }}>
           <ChartsPanel history={history} />
-        </section>
-
-        <section>
-          <EventLog events={events} />
-        </section>
+        </div>
       </main>
+
+        {/* Event log removed until anomaly detection is reintroduced */}
+      
+        {/* <section className="event-log-section">
+          <EventLog events={[]} />
+        </section> */}
+
+      {/* HardwareConnectionTester removed */}
     </div>
   );
 }

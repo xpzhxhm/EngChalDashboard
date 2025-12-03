@@ -141,9 +141,10 @@ body {
 
 .dial-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
+  /* try to fit three smaller dials on wide screens, but allow wrapping on small screens */
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
 }
 
 .dial-card {
@@ -162,7 +163,7 @@ body {
 
 .dial-svg {
   width: 100%;
-  height: 160px;
+  height: 120px;
 }
 
 .dial-arc-bg {
@@ -206,7 +207,7 @@ body {
 }
 
 .dial-value {
-  font-size: 1.5rem;
+  font-size: 1.15rem;
   font-weight: 600;
 }
 

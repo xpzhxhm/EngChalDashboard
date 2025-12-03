@@ -1,0 +1,8 @@
+{
+  "name": "device-sim",
+  "version": "1.0.0",
+  "description": "SIMULATOR REMOVED - frontend-only workspace",
+  "main": "simulatedEsp32.js",
+  "private": true
+}
+  

@@ -21,11 +21,12 @@ const describeArc = (cx, cy, radius, startAngle, endAngle) => {
 };
 
 const GAUGE = {
-  width: 220,
-  height: 140,
-  cx: 110,
-  cy: 120,
-  radius: 95,
+  // slightly reduced size to fit multiple dials on one row
+  width: 180,
+  height: 120,
+  cx: 90,
+  cy: 100,
+  radius: 76,
   startAngle: Math.PI,
   endAngle: 0
 };
@@ -63,7 +64,7 @@ export default function DialGauge({
   return (
     <div className="dial-card">
       <div className="dial-label">{label}</div>
-      <svg viewBox="0 0 220 140" className="dial-svg" role="img" aria-label={`${label} gauge`}>
+  <svg viewBox="0 0 180 120" className="dial-svg" role="img" aria-label={`${label} gauge`}>
         <path
           className="dial-arc-bg"
           d={describeArc(GAUGE.cx, GAUGE.cy, GAUGE.radius, GAUGE.startAngle, GAUGE.endAngle)}

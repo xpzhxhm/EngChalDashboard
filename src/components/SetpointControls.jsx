@@ -3,7 +3,7 @@ const CONTROL_CONFIG = {
     label: 'Temperature Setpoint',
     unit: '°C',
     min: 28,
-    max: 32,
+    max: 34,
     step: 0.1
   },
   rpm: {
