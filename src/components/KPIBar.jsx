@@ -54,9 +54,26 @@ export default function KPIBar({ current, metrics, lastUpdated, setpoints, toler
         <MetricCard label="Temperature" value={formatNumber(current?.temp, { maximumFractionDigits: 1 })} unit="°C" />
         <MetricCard label="pH" value={formatNumber(current?.pH, { maximumFractionDigits: 2 })} />
         <MetricCard label="RPM" value={formatNumber(current?.rpm)} />
-        <MetricCard label="Accuracy" value={formatPercent(metrics?.accuracy)} />
-        <MetricCard label="Precision" value={formatPercent(metrics?.precision)} />
-        <MetricCard label="Recall" value={formatPercent(metrics?.recall)} />
+        <div className="abnormal-warning-card">
+          <div className="abnormal-warning-header">
+            <div className="metric-label">Abnormal warning</div>
+            <span className="badge-soft">Model health</span>
+          </div>
+          <div className="abnormal-warning-grid">
+            <div className="abnormal-metric">
+              <span className="abnormal-metric-label">Accuracy</span>
+              <span className="abnormal-metric-value">{formatPercent(metrics?.accuracy)}</span>
+            </div>
+            <div className="abnormal-metric">
+              <span className="abnormal-metric-label">Precision</span>
+              <span className="abnormal-metric-value">{formatPercent(metrics?.precision)}</span>
+            </div>
+            <div className="abnormal-metric">
+              <span className="abnormal-metric-label">Recall</span>
+              <span className="abnormal-metric-value">{formatPercent(metrics?.recall)}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
