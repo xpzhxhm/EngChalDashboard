@@ -129,11 +129,11 @@ body {
   flex-direction: column;
 }
 
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 0.75rem;
-}
+.metric-grid { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+  gap: 0.75rem; 
+} 
 
 .metric-grid.compact {
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
@@ -285,11 +285,93 @@ body {
   margin-top: 0.3rem;
 }
 
-.metric-card {
-  background: #0f172a;
+.setpoint-actions {
+  padding: 0.75rem 0.9rem 0;
+}
+
+.send-setpoints-button {
+  width: 100%;
+  padding: 0.9rem 1rem;
   border-radius: 12px;
-  padding: 0.75rem;
-  border: 1px solid rgba(148, 163, 184, 0.1);
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #e2e8f0;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 1px solid rgba(37, 99, 235, 0.4);
+  box-shadow: 0 10px 30px rgba(37, 99, 235, 0.35);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.send-setpoints-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 34px rgba(37, 99, 235, 0.45);
+}
+
+.send-setpoints-button:active {
+  transform: translateY(0);
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.35);
+}
+
+.metric-card { 
+  background: #0f172a; 
+  border-radius: 12px; 
+  padding: 0.75rem; 
+  border: 1px solid rgba(148, 163, 184, 0.1); 
+} 
+
+.abnormal-warning-card {
+  background: linear-gradient(135deg, #0f172a 0%, #0b1220 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  padding: 0.9rem;
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.65);
+}
+
+.abnormal-warning-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-soft {
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.15);
+  color: #93c5fd;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid rgba(37, 99, 235, 0.35);
+}
+
+.abnormal-warning-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.6rem;
+}
+
+.abnormal-metric {
+  background: #111827;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.abnormal-metric-label {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+}
+
+.abnormal-metric-value {
+  font-weight: 700;
+  color: #e2e8f0;
 }
 
 .metric-label {
