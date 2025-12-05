@@ -68,11 +68,30 @@ export function useHardwareBioreactorStream(subsystem = null, options = {}) {
           setConnectionStatus("error");
         });
 
+        const normalizeTimestamp = (rawTimestamp) => {
+          if (rawTimestamp === undefined || rawTimestamp === null) {
+            return Date.now();
+          }
+
+          const numeric = Number(rawTimestamp);
+          if (Number.isNaN(numeric)) {
+            return Date.now();
+          }
+
+          // If timestamp looks like seconds (10 digits), convert to ms.
+          return numeric < 1e12 ? numeric * 1000 : numeric;
+        };
+
         client.on("message", (topic, message) => {
           // handle messages from telemetry topics; parse JSON loosely
           try {
             const data = JSON.parse(message.toString());
-            setTelemetry(data);
+            const normalized = {
+              ...data,
+              timestamp: normalizeTimestamp(data.timestamp ?? data.time),
+              receivedAt: Date.now(),
+            };
+            setTelemetry(normalized);
           } catch (err) {
             console.error("Bad telemetry JSON:", err);
           }
