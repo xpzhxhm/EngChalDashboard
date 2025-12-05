@@ -7,16 +7,29 @@ const renderSmallCircle = ({ cx, cy, fill }) => {
   return <circle cx={cx} cy={cy} r={3} fill={fill} />;
 };
 
-const sortDataByTimestamp = (points) => {
+const sanitizeAndSortByTimestamp = (points, dataKey) => {
   if (!Array.isArray(points)) return [];
-  return [...points].sort((a, b) => {
-    if (a.timestamp === b.timestamp) return 0;
-    return a.timestamp > b.timestamp ? 1 : -1;
-  });
+
+  return points
+    .map((point) => {
+      const numericTimestamp = Number(point?.timestamp ?? point?.time);
+      const numericValue = Number(point?.[dataKey]);
+
+      if (!Number.isFinite(numericTimestamp) || !Number.isFinite(numericValue)) {
+        return null;
+      }
+
+      return { ...point, timestamp: numericTimestamp, [dataKey]: numericValue };
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (a.timestamp === b.timestamp) return 0;
+      return a.timestamp > b.timestamp ? 1 : -1;
+    });
 };
 
 export default function TimeSeriesChart({ data, dataKey, label }) {
-  const normalizedData = sortDataByTimestamp(data);
+  const normalizedData = sanitizeAndSortByTimestamp(data, dataKey);
 
   return (
     <div className="chart-card">
