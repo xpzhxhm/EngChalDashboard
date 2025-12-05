@@ -30,10 +30,10 @@ export function useHardwareBioreactorStream(subsystem = null, options = {}) {
       setConnectionStatus("connecting");
       try {
         // dynamic import so Vite/browser doesn't evaluate node-only parts at module-load
-        const { default: mqtt } = await import("mqtt/dist/mqtt.esm");
+        const mqttModule = await import("mqtt/dist/mqtt");
         if (!mounted) return;
 
-        const client = mqtt.connect(MQTT_URL, {
+        const client = mqttModule.connect(MQTT_URL, {
           clean: true,
               clientId: 'nodejs-' + Math.random().toString(16).slice(2),
             username: username,
