@@ -2,6 +2,11 @@ import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAx
 
 const formatTime = (timestamp) => new Date(timestamp).toLocaleTimeString([], { hour12: false });
 
+const renderSmallCircle = ({ cx, cy, fill }) => {
+  if (cx == null || cy == null) return null;
+  return <circle cx={cx} cy={cy} r={3} fill={fill} />;
+};
+
 const sortDataByTimestamp = (points) => {
   if (!Array.isArray(points)) return [];
   return [...points].sort((a, b) => {
@@ -36,8 +41,9 @@ export default function TimeSeriesChart({ data, dataKey, label }) {
             data={normalizedData}
             dataKey={dataKey}
             fill="#60a5fa"
-            shape="circle"
-            line={false}
+            shape={renderSmallCircle}
+            line={{ stroke: '#60a5fa', strokeWidth: 2, strokeOpacity: 0.7 }}
+            lineJointType="monotoneX"
             isAnimationActive={false}
           />
         </ScatterChart>
