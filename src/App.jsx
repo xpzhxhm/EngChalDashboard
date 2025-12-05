@@ -75,8 +75,12 @@ export default function App() {
               setpoints={setpoints}
               onChange={handleSetpointChange}
             />
-            <div style={{ padding: 12 }}>
-              <button type="button" onClick={handleSendSetpoints}>
+            <div className="setpoint-actions">
+              <button
+                type="button"
+                className="send-setpoints-button"
+                onClick={handleSendSetpoints}
+              >
                 Send setpoints
               </button>
             </div>

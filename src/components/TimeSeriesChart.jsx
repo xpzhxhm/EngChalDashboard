@@ -2,16 +2,50 @@ import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAx
 
 const formatTime = (timestamp) => new Date(timestamp).toLocaleTimeString([], { hour12: false });
 
-const sortDataByTimestamp = (points) => {
+const renderSmallCircle = ({ cx, cy, fill }) => {
+  if (cx == null || cy == null) return null;
+  return <circle cx={cx} cy={cy} r={3} fill={fill} />;
+};
+
+const sanitizeAndSortByTimestamp = (points, dataKey) => {
   if (!Array.isArray(points)) return [];
-  return [...points].sort((a, b) => {
-    if (a.timestamp === b.timestamp) return 0;
-    return a.timestamp > b.timestamp ? 1 : -1;
-  });
+
+  const toTimestamp = (value) => {
+    if (value === undefined || value === null) return NaN;
+    if (Number.isFinite(value)) return value;
+
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return parsed;
+
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : NaN;
+  };
+
+  return points
+    .map((point) => {
+      const numericTimestamp = toTimestamp(point?.timestamp ?? point?.time);
+      const numericValue = Number(point?.[dataKey]);
+
+      if (!Number.isFinite(numericTimestamp) || !Number.isFinite(numericValue)) {
+        return null;
+      }
+
+      return { ...point, timestamp: numericTimestamp, [dataKey]: numericValue };
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      if (a.timestamp === b.timestamp) return 0;
+      return a.timestamp > b.timestamp ? 1 : -1;
+    });
 };
 
 export default function TimeSeriesChart({ data, dataKey, label }) {
-  const normalizedData = sortDataByTimestamp(data);
+  const normalizedData = sanitizeAndSortByTimestamp(data, dataKey);
+  const getYAxisDomain = (key) => {
+    if (key === 'temp') return [20, 'dataMax'];
+    if (key === 'pH') return [3, 'dataMax'];
+    return ['dataMin', 'dataMax'];
+  };
 
   return (
     <div className="chart-card">
@@ -27,7 +61,13 @@ export default function TimeSeriesChart({ data, dataKey, label }) {
             stroke="#94a3b8"
             domain={['dataMin', 'dataMax']}
           />
-          <YAxis type="number" dataKey={dataKey} stroke="#94a3b8" fontSize={12} />
+          <YAxis
+            type="number"
+            dataKey={dataKey}
+            stroke="#94a3b8"
+            fontSize={12}
+            domain={getYAxisDomain(dataKey)}
+          />
           <Tooltip
             contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}
             labelFormatter={(value) => formatTime(value)}
@@ -36,8 +76,9 @@ export default function TimeSeriesChart({ data, dataKey, label }) {
             data={normalizedData}
             dataKey={dataKey}
             fill="#60a5fa"
-            shape="circle"
-            line={false}
+            shape={renderSmallCircle}
+            line={{ stroke: '#60a5fa', strokeWidth: 2, strokeOpacity: 0.7 }}
+            lineJointType="monotoneX"
             isAnimationActive={false}
           />
         </ScatterChart>
