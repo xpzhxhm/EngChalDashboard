@@ -10,9 +10,20 @@ const renderSmallCircle = ({ cx, cy, fill }) => {
 const sanitizeAndSortByTimestamp = (points, dataKey) => {
   if (!Array.isArray(points)) return [];
 
+  const toTimestamp = (value) => {
+    if (value === undefined || value === null) return NaN;
+    if (Number.isFinite(value)) return value;
+
+    const parsed = Date.parse(value);
+    if (Number.isFinite(parsed)) return parsed;
+
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : NaN;
+  };
+
   return points
     .map((point) => {
-      const numericTimestamp = Number(point?.timestamp ?? point?.time);
+      const numericTimestamp = toTimestamp(point?.timestamp ?? point?.time);
       const numericValue = Number(point?.[dataKey]);
 
       if (!Number.isFinite(numericTimestamp) || !Number.isFinite(numericValue)) {
