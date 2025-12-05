@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 
 const MQTT_URL = "wss://cd85c0f44f5e4b4c94e522b103e76ee7.s1.eu.hivemq.cloud:8884/mqtt";
-const TOPIC_TELEMETRY = "bioreactor/telemetry";
+const TOPIC_TELEMETRY_BASE = "bioreactor/telemetry";
+const TOPIC_TELEMETRY_WILDCARD = `${TOPIC_TELEMETRY_BASE}/#`;
 const TOPIC_SETPOINTS = "bioreactor/setpoints";
 
 const username = "hivemq.webclient.1764949276934"
@@ -50,8 +51,8 @@ export function useHardwareBioreactorStream(subsystem = null, options = {}) {
           // subscribe to subsystem-specific topic if provided, otherwise use default
           try {
             const topic = subsystem
-              ? `bioreactor/telemetry/${subsystem}`
-              : TOPIC_TELEMETRY;
+              ? `${TOPIC_TELEMETRY_BASE}/${subsystem}`
+              : TOPIC_TELEMETRY_WILDCARD;
             client.subscribe(topic, (err) => {
               if (err) console.error("Telemetry subscribe error:", err);
             });
