@@ -41,6 +41,11 @@ const sanitizeAndSortByTimestamp = (points, dataKey) => {
 
 export default function TimeSeriesChart({ data, dataKey, label }) {
   const normalizedData = sanitizeAndSortByTimestamp(data, dataKey);
+  const getYAxisDomain = (key) => {
+    if (key === 'temp') return [20, 'dataMax'];
+    if (key === 'pH') return [3, 'dataMax'];
+    return ['dataMin', 'dataMax'];
+  };
 
   return (
     <div className="chart-card">
@@ -56,7 +61,13 @@ export default function TimeSeriesChart({ data, dataKey, label }) {
             stroke="#94a3b8"
             domain={['dataMin', 'dataMax']}
           />
-          <YAxis type="number" dataKey={dataKey} stroke="#94a3b8" fontSize={12} />
+          <YAxis
+            type="number"
+            dataKey={dataKey}
+            stroke="#94a3b8"
+            fontSize={12}
+            domain={getYAxisDomain(dataKey)}
+          />
           <Tooltip
             contentStyle={{ backgroundColor: '#0f172a', border: '1px solid #1e293b' }}
             labelFormatter={(value) => formatTime(value)}
